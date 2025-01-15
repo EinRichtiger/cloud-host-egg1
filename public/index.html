@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dateien anzeigen und herunterladen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Hochgeladene Dateien</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" />
+      <button type="submit">Hochladen</button>
+    </form>
+    <ul id="file-list"></ul>
+  </div>
+
+  <!-- Passwort-Modal -->
+  <div id="password-modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <h2>Passwort eingeben</h2>
+      <input type="password" id="password" placeholder="Passwort">
+      <button id="confirm-password">Download</button>
+    </div>
+  </div>
+
+  <script>
+    // Dateien abrufen und anzeigen
+    async function fetchFiles() {
+      const response = await fetch('/files');
+      const files = await response.json();
+      const fileList = document.getElementById('file-list');
+      fileList.innerHTML = '';
+      files.forEach(file => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+          ${file}
+          <button class="download-btn" data-file="${file}">Herunterladen</button>
+        `;
+        fileList.appendChild(listItem);
+      });
+    }
+
+    // Modal-Funktionen
+    const modal = document.getElementById('password-modal');
+    const closeModal = document.getElementById('close-modal');
+    let selectedFile = '';
+
+    document.body.addEventListener('click', (e) => {
+      if (e.target.classList.contains('download-btn')) {
+        selectedFile = e.target.dataset.file;
+        modal.style.display = 'block';
+      }
+    });
+
+    closeModal.onclick = () => {
+      modal.style.display = 'none';
+    };
+
+    document.getElementById('confirm-password').onclick = () => {
+      const password = document.getElementById('password').value;
+      window.location.href = `/download/${selectedFile}?password=${password}`;
+      modal.style.display = 'none';
+    };
+
+    window.onclick = (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    };
+
+    // Dateien abrufen, wenn die Seite geladen wird
+    fetchFiles();
+  </script>
+</body>
+</html>
