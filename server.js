@@ -68,5 +68,5 @@ app.get('/download/:file', (req, res) => {
 
 // Server starten
 app.listen(PORT, () => {
-  console.log(`Server läuft auf http://localhost:${PORT}`);
+  console.log(`Server läuft auf http://localhost:${PORT} wenn nicht passt dan pass es selber an!`);
 });
